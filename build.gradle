@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id "io.qameta.allure" version "2.10.0"
+    id 'org.gradle.test-retry' version '1.0.0'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    compileOnly 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    implementation 'com.codeborne:selenide:6.17.0'
+    implementation 'io.qameta.allure:allure-junit5:2.13.9'
+    implementation 'io.qameta.allure:allure-assertj:2.13.9'
+    implementation 'org.assertj:assertj-core:3.22.0'
+    implementation 'io.qameta.allure:allure-selenide:2.20.1'
+    testImplementation 'io.qameta.allure:allure-junit5:2.20.1'
+    testImplementation 'io.qameta.allure:allure-assertj:2.20.1'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    retry {
+        maxRetries = 0
+        maxFailures = 0
+        failOnPassedAfterRetry = false
+    }
+}
+
+tasks.register("webtestsInChrome", Test).configure() {
+    filter {
+        systemProperties['selenide.browser'] = 'chrome'
+        systemProperties['selenide.headless'] = 'true'
+        includeTestsMatching("web*")
+    }
+}
